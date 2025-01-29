@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "com.backrooms.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"BedMixin",
+		"EnderPearlMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

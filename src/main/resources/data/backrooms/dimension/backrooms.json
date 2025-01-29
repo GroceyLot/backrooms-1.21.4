@@ -1,0 +1,10 @@
+{
+  "type": "backrooms:backrooms_type",
+  "generator": {
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:plains"
+    },
+    "type": "backrooms:custom_generator"
+  }
+}
