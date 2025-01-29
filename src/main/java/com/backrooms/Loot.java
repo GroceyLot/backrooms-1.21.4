@@ -26,7 +26,6 @@ public class Loot {
             new LootEntry(Items.POTATO, 6, 1, 3),
             new LootEntry(Items.BEETROOT, 5, 1, 3),
             new LootEntry(Items.DEAD_BUSH, 10),
-            new LootEntry(Items.STICK, 8, 2, 5),
             new LootEntry(Items.WHEAT_SEEDS, 8),
             new LootEntry(Items.FEATHER, 6),
             new LootEntry(Items.PAPER, 6),
@@ -66,11 +65,16 @@ public class Loot {
             new LootEntry(Items.GOLD_INGOT, 4, 1, 3),
             new LootEntry(Items.GOLDEN_CARROT, 3),
             new LootEntry(Items.GOLDEN_APPLE, 2),
-            new LootEntry(Items.ENCHANTED_BOOK, 1),
             new LootEntry(Items.ENDER_PEARL, 3),
             new LootEntry(Items.BUCKET, 4),
             new LootEntry(Items.PAINTING, 2),
-            new LootEntry(Items.NAME_TAG, 1)
+            new LootEntry(Items.NAME_TAG, 1),
+            new LootEntry(Items.STICK, 1)
+    );
+
+    public static final List<LootEntry> ultraLoot = List.of(
+            new LootEntry(Items.ENCHANTED_BOOK, 1),
+            new LootEntry(Items.NETHERITE_INGOT, 10)
     );
 
 
@@ -99,6 +103,10 @@ public class Loot {
                     itemStack = getOverleveledEnchantedBook(world, random);
                 }
 
+                if (entry.item == Items.STICK) {
+                    itemStack = getKnockbackStick(world);
+                }
+
                 return itemStack;
             }
         }
@@ -113,11 +121,9 @@ public class Loot {
 
         // Define possible enchantments
         List<RegistryKey<Enchantment>> possibleEnchantments = List.of(
-                Enchantments.SHARPNESS,
-                Enchantments.PROTECTION,
-                Enchantments.FORTUNE,
-                Enchantments.UNBREAKING,
-                Enchantments.EFFICIENCY
+                Enchantments.SWIFT_SNEAK,
+                Enchantments.FEATHER_FALLING,
+                Enchantments.RESPIRATION
         );
 
         // Select a random enchantment
@@ -147,6 +153,37 @@ public class Loot {
         enchantedBook.addEnchantment(enchantmentRegistry.getEntry(enchantment), overleveledLevel);
 
         return enchantedBook;
+    }
+
+    public static ItemStack getKnockbackStick(ServerWorld world) {
+
+        // Create an enchanted book
+        ItemStack stick = new ItemStack(Items.ENCHANTED_BOOK);
+        // Select a random enchantment
+        RegistryKey<Enchantment> selectedEnchantment = Enchantments.KNOCKBACK;
+        Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment = world.getRegistryManager().getOptionalEntry(selectedEnchantment);
+
+        // Check if the enchantment exists
+        if (optionalEnchantment.isEmpty()) {
+            return stick;
+        }
+
+        Optional<Registry<Enchantment>> optionalEnchantmentRegistry = world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT);
+
+        // Check if the enchantment exists
+        if (optionalEnchantmentRegistry.isEmpty()) {
+            return stick;
+        }
+
+        Registry<Enchantment> enchantmentRegistry = optionalEnchantmentRegistry.get();
+
+        // Get the enchantment value
+        Enchantment enchantment = optionalEnchantment.get().value();
+
+        // Add the enchantment properly using EnchantedBookItem
+        stick.addEnchantment(enchantmentRegistry.getEntry(enchantment), 3);
+
+        return stick;
     }
 
 

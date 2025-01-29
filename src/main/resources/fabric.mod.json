@@ -3,13 +3,13 @@
 	"id": "backrooms",
 	"version": "${version}",
 	"name": "Backrooms",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Adds the backrooms with some extra good loot.",
 	"authors": [
-		"Me!"
+		"GroceyLot"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/GroceyLot/backrooms-1.21.4",
+		"issues": "https://github.com/GroceyLot/backrooms-1.21.4/issues"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/backrooms/icon.png",

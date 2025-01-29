@@ -70,7 +70,9 @@ public class CustomChunkGenerator extends ChunkGenerator {
                     BarrelBlockEntity barrelBlockEntity = new BarrelBlockEntity(pos, Blocks.BARREL.getDefaultState());
                     chunk.setBlockEntity(barrelBlockEntity);
                     List<Loot.LootEntry> loot;
-                    if (random.nextFloat() > 0.95) { // 5% chance of rare loot
+                    if (random.nextFloat() > 0.99) { // 1% chance of ultra loot
+                        loot = Loot.ultraLoot;
+                    } else if (random.nextFloat() > 0.95) { // 5% chance of rare loot
                         loot = Loot.rareLoot;
                     } else {
                         loot = Loot.barrelLoot;
@@ -239,7 +241,8 @@ public class CustomChunkGenerator extends ChunkGenerator {
 
                                 if (y == -1) {
                                     // BARRIER at the far below (like a floor).
-                                    chunk.setBlockState(pos.add(0, -50, 0), Blocks.BARRIER.getDefaultState(), false);
+                                    BlockPos newPos = pos.add(0, -49, 0);
+                                    chunk.setBlockState(newPos, Blocks.BARRIER.getDefaultState(), false);
                                 } else if (y == 4) {
                                     // “Ceiling” layer: center 2×2 uses LIGHT, else STONE_BRICKS
                                     if (subX > 0 && subX < 3 && subZ > 0 && subZ < 3) {
