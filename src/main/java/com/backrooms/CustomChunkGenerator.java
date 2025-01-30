@@ -230,8 +230,9 @@ public class CustomChunkGenerator extends ChunkGenerator {
                         for (int subZ = 0; subZ < 4; subZ++) {
                             // Check if the sub-pattern says "block" (1) or "air" (0).
                             boolean isBlock = subPattern[subX][subZ] == 1;
-
-                            for (int y = -1; y < 5; y++) {
+                            BlockPos newPos = new BlockPos(pos.getX(), 2, pos.getZ());
+                            chunk.setBlockState(newPos, Blocks.BEDROCK.getDefaultState(), false);
+                            for (int y = 0; y < 5; y++) {
                                 // Convert to actual world coordinates.
                                 pos.set(
                                         chunkX + (bigX * 4) + subX,
@@ -239,11 +240,7 @@ public class CustomChunkGenerator extends ChunkGenerator {
                                         chunkZ + (bigZ * 4) + subZ
                                 );
 
-                                if (y == -1) {
-                                    // BARRIER at the far below (like a floor).
-                                    BlockPos newPos = pos.add(0, -49, 0);
-                                    chunk.setBlockState(newPos, Blocks.BARRIER.getDefaultState(), false);
-                                } else if (y == 4) {
+                                if (y == 4) {
                                     // “Ceiling” layer: center 2×2 uses LIGHT, else STONE_BRICKS
                                     if (subX > 0 && subX < 3 && subZ > 0 && subZ < 3) {
                                         chunk.setBlockState(pos, Blocks.LIGHT.getDefaultState(), false);
@@ -275,12 +272,12 @@ public class CustomChunkGenerator extends ChunkGenerator {
                     for (int x = 0; x < 4; x++) {
                         for (int z = 0; z < 4; z++) {
                             boolean isBlock = pattern[x][z] == 1;
-                            for (int y = -1; y < 5; y++) {
-                                pos.set(chunkX + sectionX + x, y + 50, chunkZ + sectionZ + z);
 
-                                if (y == -1) {
-                                    chunk.setBlockState(pos.add(0, -50, 0), Blocks.BARRIER.getDefaultState(), false);
-                                } else if (y == 4) {
+                            BlockPos newPos = new BlockPos(pos.getX(), 2, pos.getZ());
+                            chunk.setBlockState(newPos, Blocks.BEDROCK.getDefaultState(), false);
+                            for (int y = 0; y < 5; y++) {
+                                pos.set(chunkX + sectionX + x, y + 50, chunkZ + sectionZ + z);
+                                if (y == 4) {
                                     if (x > 0 && x < 3 && z > 0 && z < 3) {
                                         chunk.setBlockState(pos, Blocks.LIGHT.getDefaultState(), false);
                                     } else {

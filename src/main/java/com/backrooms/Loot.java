@@ -104,7 +104,8 @@ public class Loot {
                 }
 
                 if (entry.item == Items.STICK) {
-                    itemStack = getKnockbackStick(world);
+                    itemStack = getKnockbackStick(world
+                    );
                 }
 
                 return itemStack;

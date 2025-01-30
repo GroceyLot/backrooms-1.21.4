@@ -91,7 +91,7 @@ public class TeleportManager {
     }
 
     // Check if the player is in the Backrooms
-    private static boolean isInBackrooms(ServerPlayerEntity player) {
+    public static boolean isInBackrooms(ServerPlayerEntity player) {
         RegistryKey<?> worldKey = player.getWorld().getRegistryKey();
         return worldKey.equals(backroomsDim);
     }
