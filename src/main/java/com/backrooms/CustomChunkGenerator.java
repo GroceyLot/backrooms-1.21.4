@@ -18,6 +18,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.Blender;
@@ -47,7 +48,7 @@ public class CustomChunkGenerator extends ChunkGenerator {
         super(biomeSource);
         this.biomeSource = biomeSource;
         this.random = new Random();
-        this.seed = 0;
+        this.seed = random.nextInt();
     }
 
     @Override
@@ -96,6 +97,10 @@ public class CustomChunkGenerator extends ChunkGenerator {
         return Math.abs(OpenSimplex2S.noise2(seed + 2, chunkX, chunkZ)) > 0.9;
     }
 
+    private boolean isSculkChunk(double chunkX, double chunkZ) {
+        return Math.abs(OpenSimplex2S.noise2(seed + 3, chunkX, chunkZ)) > 0.9;
+    }
+
     @Override
     public void buildSurface(ChunkRegion region, StructureAccessor structures, NoiseConfig noiseConfig, Chunk chunk) {
         BlockPos.Mutable pos = new BlockPos.Mutable();
@@ -109,10 +114,13 @@ public class CustomChunkGenerator extends ChunkGenerator {
 
         boolean spiderChunk = isSpiderChunk(noiseX, noiseY);
         boolean waterChunk = isWaterChunk(noiseX, noiseY);
+        boolean sculkChunk = isSculkChunk(noiseX, noiseY);
 
         // Build surface using the biome's block palette
         for (int sectionX = 0; sectionX < 16; sectionX++) {
             for (int sectionZ = 0; sectionZ < 16; sectionZ++) {
+                BlockPos newPos = new BlockPos(chunkX + sectionX, 2, chunkZ + sectionZ);
+                chunk.setBlockState(newPos, Blocks.BEDROCK.getDefaultState(), false);
                 for (int y = 0; y < 5; y++) {
                     pos.set(chunkX + sectionX, y + 50, chunkZ + sectionZ);
                     if (chunk.getBlockState(pos).isOf(Blocks.STONE_BRICKS)) {
@@ -121,11 +129,11 @@ public class CustomChunkGenerator extends ChunkGenerator {
                         if (random.nextFloat() > 0.5) {
                             chunk.setBlockState(pos, palette[2].getDefaultState(), false);
                         } else {
-                            if (palette[3] == Blocks.REDSTONE_LAMP) {
+                            if (palette[3] == Blocks.REDSTONE_LAMP && !sculkChunk) {
                                 chunk.setBlockState(pos, Blocks.REDSTONE_LAMP.getDefaultState().with(Properties.LIT, true), false); // Ensure powered
                                 chunk.setBlockState(pos.add(0, 1, 0), Blocks.LEVER.getDefaultState().with(Properties.POWERED, true).with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(Properties.BLOCK_FACE, BlockFace.FLOOR), false); // Place powered lever above
                             } else {
-                                chunk.setBlockState(pos, palette[3].getDefaultState(), false);
+                                chunk.setBlockState(pos, !sculkChunk ? palette[3].getDefaultState() : Blocks.REDSTONE_LAMP.getDefaultState(), false);
                             }
                         }
                     } else if (chunk.getBlockState(pos).isOf(Blocks.COBBLESTONE)) {
@@ -139,6 +147,17 @@ public class CustomChunkGenerator extends ChunkGenerator {
                             chunk.setBlockState(pos, Blocks.COBWEB.getDefaultState(), false); // Cobweb
                         } else {
                             chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false); // Air
+                        }
+                    }
+                }
+                if (sculkChunk) {
+                    pos.set(chunkX + sectionX, 55, chunkZ + sectionZ);
+                    int block = SculkChunk.sculkChunk[sectionX][sectionZ];
+                    if (block != 0) {
+                        if (block == 1) {
+                            chunk.setBlockState(pos, Blocks.REDSTONE_WIRE.getDefaultState(), false);
+                        } else if (block == 2) {
+                            chunk.setBlockState(pos, Blocks.SCULK_SENSOR.getDefaultState(), false);
                         }
                     }
                 }
@@ -190,9 +209,10 @@ public class CustomChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<Chunk> populateBiomes(NoiseConfig noiseConfig, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
+        BiomeSource biomeSource = this.getBiomeSource();
+        chunk.populateBiomes(biomeSource, noiseConfig.getMultiNoiseSampler());
         return CompletableFuture.completedFuture(chunk);
     }
-
     @Override
     public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk) {
 
@@ -230,8 +250,6 @@ public class CustomChunkGenerator extends ChunkGenerator {
                         for (int subZ = 0; subZ < 4; subZ++) {
                             // Check if the sub-pattern says "block" (1) or "air" (0).
                             boolean isBlock = subPattern[subX][subZ] == 1;
-                            BlockPos newPos = new BlockPos(pos.getX(), 2, pos.getZ());
-                            chunk.setBlockState(newPos, Blocks.BEDROCK.getDefaultState(), false);
                             for (int y = 0; y < 5; y++) {
                                 // Convert to actual world coordinates.
                                 pos.set(
@@ -272,9 +290,6 @@ public class CustomChunkGenerator extends ChunkGenerator {
                     for (int x = 0; x < 4; x++) {
                         for (int z = 0; z < 4; z++) {
                             boolean isBlock = pattern[x][z] == 1;
-
-                            BlockPos newPos = new BlockPos(pos.getX(), 2, pos.getZ());
-                            chunk.setBlockState(newPos, Blocks.BEDROCK.getDefaultState(), false);
                             for (int y = 0; y < 5; y++) {
                                 pos.set(chunkX + sectionX + x, y + 50, chunkZ + sectionZ + z);
                                 if (y == 4) {
@@ -337,6 +352,7 @@ public class CustomChunkGenerator extends ChunkGenerator {
     public void appendDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
     }
 
+    @Override
     public BiomeSource getBiomeSource() {
         return this.biomeSource;
     }

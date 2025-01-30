@@ -22,6 +22,7 @@ public abstract class EnderPearlMixin {
         World world = pearlEntity.getWorld();
         if (pearlEntity.getOwner() instanceof ServerPlayerEntity player) {
             if (StalkerMonsterManager.monsterExists(player.getUuid())) {
+                pearlEntity.remove(Entity.RemovalReason.KILLED);
                 ci.cancel();
                 return;
             }

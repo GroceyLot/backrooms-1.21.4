@@ -74,7 +74,9 @@ public class Loot {
 
     public static final List<LootEntry> ultraLoot = List.of(
             new LootEntry(Items.ENCHANTED_BOOK, 1),
-            new LootEntry(Items.NETHERITE_INGOT, 10)
+            new LootEntry(Items.DIAMOND, 10),
+            new LootEntry(Items.NETHERITE_INGOT, 2),
+            new LootEntry(Items.NETHERITE_SCRAP, 6)
     );
 
 
@@ -182,7 +184,7 @@ public class Loot {
         Enchantment enchantment = optionalEnchantment.get().value();
 
         // Add the enchantment properly using EnchantedBookItem
-        stick.addEnchantment(enchantmentRegistry.getEntry(enchantment), 3);
+        stick.addEnchantment(enchantmentRegistry.getEntry(enchantment), 4);
 
         return stick;
     }

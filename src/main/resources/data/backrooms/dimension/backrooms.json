@@ -3,7 +3,7 @@
   "generator": {
     "biome_source": {
       "type": "minecraft:fixed",
-      "biome": "minecraft:plains"
+      "biome": "backrooms:backrooms"
     },
     "type": "backrooms:custom_generator"
   }
