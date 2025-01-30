@@ -34,7 +34,7 @@ public class BedMixin {
             ServerWorld overworld = Objects.requireNonNull(world.getServer()).getWorld(World.OVERWORLD);
             if (overworld != null) {
                 if (player instanceof ServerPlayerEntity serverPlayer) {
-                    TeleportManager.teleportBackToOverworld(serverPlayer);
+                    TeleportManager.teleportBackToOverworld(serverPlayer, false);
                 }
             }
             cir.cancel();

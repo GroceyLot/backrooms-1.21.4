@@ -44,7 +44,6 @@ public class Backrooms implements ModInitializer {
 		tickCounter++;
 		if (tickCounter >= 1200) { // Every minute (20 ticks * 60)
 			tickCounter = 0;
-			System.out.println("Minute passed!");
 			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
 				if (random.nextInt(10) == 0) {
 					StalkerMonsterManager.spawnMonster(player);

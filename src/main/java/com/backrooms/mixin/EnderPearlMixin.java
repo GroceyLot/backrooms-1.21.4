@@ -1,6 +1,7 @@
 package com.backrooms.mixin;
 
 import com.backrooms.TeleportManager;
+import com.backrooms.monster.StalkerMonsterManager;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
@@ -19,17 +20,23 @@ public abstract class EnderPearlMixin {
     public void onEnderPearlCollision(net.minecraft.util.hit.HitResult hitResult, CallbackInfo ci) {
         EnderPearlEntity pearlEntity = (EnderPearlEntity) (Object) this;
         World world = pearlEntity.getWorld();
+        if (pearlEntity.getOwner() instanceof ServerPlayerEntity player) {
+            if (StalkerMonsterManager.monsterExists(player.getUuid())) {
+                ci.cancel();
+                return;
+            }
 
-        if (!world.isClient && hitResult.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
-            BlockPos blockPos = ((net.minecraft.util.hit.BlockHitResult) hitResult).getBlockPos();
+            if (!world.isClient && hitResult.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
+                BlockPos blockPos = ((net.minecraft.util.hit.BlockHitResult) hitResult).getBlockPos();
 
-            // Check if the block at the position is yellow carpet
-            if (world.getBlockState(blockPos).isOf(Blocks.YELLOW_CARPET)) {
-                // Get the player who threw the ender pearl
-                if (pearlEntity.getOwner() instanceof ServerPlayerEntity player) {
-
-                    // Call your custom teleport function with the player as an argument
-                    TeleportManager.teleportToBackrooms(player);
+                // Check if the block at the position is yellow carpet
+                if (world.getBlockState(blockPos).isOf(Blocks.YELLOW_CARPET)) {
+                    if (TeleportManager.isInBackrooms(player)) {
+                        // Call your custom teleport function with the player as an argument
+                        TeleportManager.teleportBackToOverworld(player, true);
+                    } else {
+                        TeleportManager.teleportToBackrooms(player);
+                    }
                     pearlEntity.remove(Entity.RemovalReason.KILLED);
                     ci.cancel();
                 }
