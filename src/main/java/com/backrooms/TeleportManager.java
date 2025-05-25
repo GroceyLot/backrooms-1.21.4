@@ -1,11 +1,11 @@
 package com.backrooms;
+
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.util.math.Vec3d;
@@ -51,32 +51,16 @@ public class TeleportManager {
     }
 
     /// Teleport the player back to the Overworld (only if in Backrooms)
-    public static void teleportBackToOverworld(ServerPlayerEntity player, boolean playerPos) {
+    public static void teleportBackToOverworld(ServerPlayerEntity player) {
         // Check if the player is in the Backrooms
         if (!isInBackrooms(player)) {
             return; // Do nothing if not in the Backrooms
         }
 
-        // Get the player's bed spawn position
-        BlockPos bedLocation = player.getSpawnPointPosition();
-        ServerWorld bedWorld = player.getSpawnPointDimension() != null
-                ? Objects.requireNonNull(player.getServer()).getWorld(player.getSpawnPointDimension())
-                : null;
-
         Vec3d targetPosition;
         ServerWorld targetWorld = Objects.requireNonNull(player.getServer()).getOverworld();
 
-        if (playerPos) {
-            targetPosition = new Vec3d(player.getX(), 320, player.getZ());
-        } else if (bedLocation != null && bedWorld != null) {
-            // If a valid bed location exists, use it
-            targetPosition = Vec3d.ofCenter(bedLocation);
-            targetWorld = bedWorld;
-        } else {
-            // Fallback to world spawn location in the Overworld
-            BlockPos defaultSpawn = targetWorld.getSpawnPos();
-            targetPosition = Vec3d.ofCenter(defaultSpawn);
-        }
+        targetPosition = new Vec3d(player.getX(), 320, player.getZ());
 
         // Define the teleport target
         TeleportTarget.PostDimensionTransition transition = (entity) -> {};

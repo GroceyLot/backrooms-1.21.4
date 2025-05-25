@@ -3,8 +3,8 @@
 	"package": "com.backrooms.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"BedMixin",
-		"EnderPearlMixin"
+		"EnderPearlMixin",
+		"PlayerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

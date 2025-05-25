@@ -15,13 +15,16 @@ import net.minecraft.util.Identifier;
 import java.util.Random;
 
 public class Backrooms implements ModInitializer {
-	public static final Identifier CUSTOM_GENERATOR_ID =  Identifier.of("backrooms", "custom_generator");
-	private Random random;
+	public static final Identifier CUSTOM_GENERATOR_ID = Identifier.of("backrooms", "custom_generator");
+	private final Random random = new Random();
+	private int tickCounter = 0;
 
-    @Override
+	@Override
 	public void onInitialize() {
 		Registry.register(Registries.CHUNK_GENERATOR, CUSTOM_GENERATOR_ID, CustomChunkGenerator.CODEC);
 		ServerTickEvents.START_SERVER_TICK.register(this::onTick);
+
+		// Register command to manually spawn monsters
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(CommandManager.literal("spawnmonsters")
 					.requires(source -> source.hasPermissionLevel(2)) // Requires operator level 2
@@ -35,22 +38,22 @@ public class Backrooms implements ModInitializer {
 					})
 			);
 		});
-		this.random = new Random();
 	}
-
-	private int tickCounter = 0;
 
 	private void onTick(MinecraftServer server) {
 		tickCounter++;
-		if (tickCounter >= 1200) { // Every minute (20 ticks * 60)
+
+		// Periodically attempt to spawn monsters (every minute, 1200 ticks)
+		if (tickCounter >= 1200) {
 			tickCounter = 0;
 			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-				if (random.nextInt(10) == 0) {
+				if (random.nextInt(10) == 0) { // 10% chance per player per minute
 					StalkerMonsterManager.spawnMonster(player);
 				}
 			}
 		}
 
-		StalkerMonsterManager.updateMonsters();
+		// Update all active stalker monsters
+		StalkerMonsterManager.updateMonsters(server);
 	}
 }

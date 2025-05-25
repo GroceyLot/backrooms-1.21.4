@@ -3,7 +3,7 @@
 	"id": "backrooms",
 	"version": "${version}",
 	"name": "Backrooms",
-	"description": "Adds the backrooms with some extra good loot.",
+	"description": "Adds the backrooms with some extra good loot and a spooky monster.",
 	"authors": [
 		"GroceyLot"
 	],

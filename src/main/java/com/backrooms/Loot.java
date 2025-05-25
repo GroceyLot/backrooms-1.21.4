@@ -26,6 +26,7 @@ public class Loot {
             new LootEntry(Items.POTATO, 6, 1, 3),
             new LootEntry(Items.BEETROOT, 5, 1, 3),
             new LootEntry(Items.DEAD_BUSH, 10),
+            new LootEntry(Items.ENDER_PEARL, 20),
             new LootEntry(Items.WHEAT_SEEDS, 8),
             new LootEntry(Items.FEATHER, 6),
             new LootEntry(Items.PAPER, 6),
@@ -65,7 +66,7 @@ public class Loot {
             new LootEntry(Items.GOLD_INGOT, 4, 1, 3),
             new LootEntry(Items.GOLDEN_CARROT, 3),
             new LootEntry(Items.GOLDEN_APPLE, 2),
-            new LootEntry(Items.ENDER_PEARL, 3),
+            new LootEntry(Items.ENDER_PEARL, 10),
             new LootEntry(Items.BUCKET, 4),
             new LootEntry(Items.PAINTING, 2),
             new LootEntry(Items.NAME_TAG, 1),
@@ -161,7 +162,7 @@ public class Loot {
     public static ItemStack getKnockbackStick(ServerWorld world) {
 
         // Create an enchanted book
-        ItemStack stick = new ItemStack(Items.ENCHANTED_BOOK);
+        ItemStack stick = new ItemStack(Items.STICK);
         // Select a random enchantment
         RegistryKey<Enchantment> selectedEnchantment = Enchantments.KNOCKBACK;
         Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment = world.getRegistryManager().getOptionalEntry(selectedEnchantment);

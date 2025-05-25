@@ -18,7 +18,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.Blender;
@@ -67,7 +66,7 @@ public class CustomChunkGenerator extends ChunkGenerator {
                 pos.set(chunkX + sectionX, 51, chunkZ + sectionZ);
                 // Only place a barrel if it's an open space
                 if (random.nextFloat() < 0.0025 && chunk.getBlockState(pos).isAir()) { // 0.25% chance per block
-                    chunk.setBlockState(pos, Blocks.BARREL.getDefaultState(), false); // Place the block
+                    chunk.setBlockState(pos, Blocks.BARREL.getDefaultState(), Block.NOTIFY_ALL); // Place the block
                     BarrelBlockEntity barrelBlockEntity = new BarrelBlockEntity(pos, Blocks.BARREL.getDefaultState());
                     chunk.setBlockEntity(barrelBlockEntity);
                     List<Loot.LootEntry> loot;
@@ -79,6 +78,16 @@ public class CustomChunkGenerator extends ChunkGenerator {
                         loot = Loot.barrelLoot;
                     }
                     Loot.addRandomLoot(barrelBlockEntity, world.toServerWorld(), loot, random);
+                }
+            }
+        }
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < chunk.getHeight(); y++) {
+                    pos.set(chunkX + x, y, chunkZ + z);
+                    if (chunk.getBlockState(pos).isOf(Blocks.REDSTONE_WIRE)) {
+                        world.updateNeighbors(pos, chunk.getBlockState(pos).getBlock());
+                    }
                 }
             }
         }
@@ -120,44 +129,44 @@ public class CustomChunkGenerator extends ChunkGenerator {
         for (int sectionX = 0; sectionX < 16; sectionX++) {
             for (int sectionZ = 0; sectionZ < 16; sectionZ++) {
                 BlockPos newPos = new BlockPos(chunkX + sectionX, 2, chunkZ + sectionZ);
-                chunk.setBlockState(newPos, Blocks.BEDROCK.getDefaultState(), false);
+                chunk.setBlockState(newPos, Blocks.BEDROCK.getDefaultState(), Block.NOTIFY_ALL);
                 for (int y = 0; y < 5; y++) {
                     pos.set(chunkX + sectionX, y + 50, chunkZ + sectionZ);
                     if (chunk.getBlockState(pos).isOf(Blocks.STONE_BRICKS)) {
-                        chunk.setBlockState(pos, palette[2].getDefaultState(), false);
+                        chunk.setBlockState(pos, palette[2].getDefaultState(), Block.NOTIFY_ALL);
                     } else if (chunk.getBlockState(pos).isOf(Blocks.LIGHT)) {
                         if (random.nextFloat() > 0.5) {
-                            chunk.setBlockState(pos, palette[2].getDefaultState(), false);
+                            chunk.setBlockState(pos, palette[2].getDefaultState(), Block.NOTIFY_ALL);
                         } else {
                             if (palette[3] == Blocks.REDSTONE_LAMP && !sculkChunk) {
-                                chunk.setBlockState(pos, Blocks.REDSTONE_LAMP.getDefaultState().with(Properties.LIT, true), false); // Ensure powered
-                                chunk.setBlockState(pos.add(0, 1, 0), Blocks.LEVER.getDefaultState().with(Properties.POWERED, true).with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(Properties.BLOCK_FACE, BlockFace.FLOOR), false); // Place powered lever above
+                                chunk.setBlockState(pos, Blocks.REDSTONE_LAMP.getDefaultState().with(Properties.LIT, true), Block.NOTIFY_ALL); // Ensure powered
+                                chunk.setBlockState(pos.add(0, 1, 0), Blocks.LEVER.getDefaultState().with(Properties.POWERED, true).with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(Properties.BLOCK_FACE, BlockFace.FLOOR), Block.NOTIFY_ALL); // Place powered lever above
                             } else {
-                                chunk.setBlockState(pos, !sculkChunk ? palette[3].getDefaultState() : Blocks.REDSTONE_LAMP.getDefaultState(), false);
+                                chunk.setBlockState(pos, !sculkChunk ? palette[3].getDefaultState() : Blocks.REDSTONE_LAMP.getDefaultState(), Block.NOTIFY_ALL);
                             }
                         }
                     } else if (chunk.getBlockState(pos).isOf(Blocks.COBBLESTONE)) {
-                        chunk.setBlockState(pos, palette[0].getDefaultState(), false);
+                        chunk.setBlockState(pos, palette[0].getDefaultState(), Block.NOTIFY_ALL);
                     } else if (chunk.getBlockState(pos).isOf(Blocks.GRAVEL)) {
-                        chunk.setBlockState(pos, palette[1].getDefaultState(), false);
+                        chunk.setBlockState(pos, palette[1].getDefaultState(), Block.NOTIFY_ALL);
                     } else if (chunk.getBlockState(pos).isOf(Blocks.STONE)) {
                         if (waterChunk) {
-                            chunk.setBlockState(pos, Blocks.WATER.getDefaultState(), false); // Water
+                            chunk.setBlockState(pos, Blocks.WATER.getDefaultState(), Block.NOTIFY_ALL); // Water
                         } else if (spiderChunk && random.nextFloat() > 0.75) {
-                            chunk.setBlockState(pos, Blocks.COBWEB.getDefaultState(), false); // Cobweb
+                            chunk.setBlockState(pos, Blocks.COBWEB.getDefaultState(), Block.NOTIFY_ALL); // Cobweb
                         } else {
-                            chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false); // Air
+                            chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL); // Air
                         }
                     }
                 }
                 if (sculkChunk) {
                     pos.set(chunkX + sectionX, 55, chunkZ + sectionZ);
-                    int block = SculkChunk.sculkChunk[sectionX][sectionZ];
+                    int block = Data.sculkChunk[sectionX][sectionZ];
                     if (block != 0) {
                         if (block == 1) {
-                            chunk.setBlockState(pos, Blocks.REDSTONE_WIRE.getDefaultState(), false);
+                            chunk.setBlockState(pos, Blocks.REDSTONE_WIRE.getDefaultState(), Block.NOTIFY_ALL);
                         } else if (block == 2) {
-                            chunk.setBlockState(pos, Blocks.SCULK_SENSOR.getDefaultState(), false);
+                            chunk.setBlockState(pos, Blocks.SCULK_SENSOR.getDefaultState(), Block.NOTIFY_ALL);
                         }
                     }
                 }
@@ -261,19 +270,19 @@ public class CustomChunkGenerator extends ChunkGenerator {
                                 if (y == 4) {
                                     // “Ceiling” layer: center 2×2 uses LIGHT, else STONE_BRICKS
                                     if (subX > 0 && subX < 3 && subZ > 0 && subZ < 3) {
-                                        chunk.setBlockState(pos, Blocks.LIGHT.getDefaultState(), false);
+                                        chunk.setBlockState(pos, Blocks.LIGHT.getDefaultState(), Block.FORCE_STATE);
                                     } else {
-                                        chunk.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), false);
+                                        chunk.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), Block.FORCE_STATE);
                                     }
                                 } else if (y == 0) {
                                     // “Floor” layer
-                                    chunk.setBlockState(pos, Blocks.GRAVEL.getDefaultState(), false);
+                                    chunk.setBlockState(pos, Blocks.GRAVEL.getDefaultState(), Block.FORCE_STATE);
                                 } else {
                                     // “Walls” or “Air” placeholders
                                     if (isBlock) {
-                                        chunk.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState(), false);
+                                        chunk.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState(), Block.FORCE_STATE);
                                     } else {
-                                        chunk.setBlockState(pos, Blocks.STONE.getDefaultState(), false);
+                                        chunk.setBlockState(pos, Blocks.STONE.getDefaultState(), Block.FORCE_STATE);
                                     }
                                 }
                             }
@@ -294,16 +303,16 @@ public class CustomChunkGenerator extends ChunkGenerator {
                                 pos.set(chunkX + sectionX + x, y + 50, chunkZ + sectionZ + z);
                                 if (y == 4) {
                                     if (x > 0 && x < 3 && z > 0 && z < 3) {
-                                        chunk.setBlockState(pos, Blocks.LIGHT.getDefaultState(), false);
+                                        chunk.setBlockState(pos, Blocks.LIGHT.getDefaultState(), Block.FORCE_STATE);
                                     } else {
-                                        chunk.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), false);
+                                        chunk.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), Block.FORCE_STATE);
                                     }
                                 } else if (y == 0) {
-                                    chunk.setBlockState(pos, Blocks.GRAVEL.getDefaultState(), false);
+                                    chunk.setBlockState(pos, Blocks.GRAVEL.getDefaultState(), Block.FORCE_STATE);
                                 } else if (isBlock) {
-                                    chunk.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState(), false);
+                                    chunk.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState(), Block.FORCE_STATE);
                                 } else {
-                                    chunk.setBlockState(pos, Blocks.STONE.getDefaultState(), false);
+                                    chunk.setBlockState(pos, Blocks.STONE.getDefaultState(), Block.FORCE_STATE);
                                 }
                             }
                         }

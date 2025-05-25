@@ -21,7 +21,7 @@ public abstract class EnderPearlMixin {
         EnderPearlEntity pearlEntity = (EnderPearlEntity) (Object) this;
         World world = pearlEntity.getWorld();
         if (pearlEntity.getOwner() instanceof ServerPlayerEntity player) {
-            if (StalkerMonsterManager.monsterExists(player.getUuid())) {
+            if (StalkerMonsterManager.monsterExists(player.getUuidAsString())) {
                 pearlEntity.remove(Entity.RemovalReason.KILLED);
                 ci.cancel();
                 return;
@@ -34,7 +34,7 @@ public abstract class EnderPearlMixin {
                 if (world.getBlockState(blockPos).isOf(Blocks.YELLOW_CARPET)) {
                     if (TeleportManager.isInBackrooms(player)) {
                         // Call your custom teleport function with the player as an argument
-                        TeleportManager.teleportBackToOverworld(player, true);
+                        TeleportManager.teleportBackToOverworld(player);
                     } else {
                         TeleportManager.teleportToBackrooms(player);
                     }
