@@ -1,6 +1,7 @@
 package com.backrooms;
 
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -10,12 +11,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.util.math.Vec3d;
 
-import java.awt.*;
 import java.util.Objects;
 
 public class TeleportManager {
 
-    private static final RegistryKey<Dimension> backroomsDim = RegistryKey.of(RegistryKey.ofRegistry(Identifier.of("minecraft", "dimension")), Identifier.of("backrooms", "backrooms"));
+    private static final RegistryKey<World> BACKROOMS_DIM =
+            RegistryKey.of(RegistryKeys.WORLD, Identifier.of("backrooms", "backrooms"));
 
     // Teleport a player to the Backrooms (only if in Overworld)
     public static void teleportToBackrooms(ServerPlayerEntity player) {
@@ -29,7 +30,7 @@ public class TeleportManager {
         // Loop through each world and print its registry key
         for (ServerWorld world : Objects.requireNonNull(player.getServer()).getWorlds()) {
             RegistryKey<?> worldKey = world.getRegistryKey();
-            if (worldKey.equals(backroomsDim)) {
+            if (worldKey.equals(BACKROOMS_DIM)) {
                 customWorld = world;
             }
         }
@@ -79,6 +80,6 @@ public class TeleportManager {
     // Check if the player is in the Backrooms
     public static boolean isInBackrooms(ServerPlayerEntity player) {
         RegistryKey<?> worldKey = player.getWorld().getRegistryKey();
-        return worldKey.equals(backroomsDim);
+        return worldKey.equals(BACKROOMS_DIM);
     }
 }
